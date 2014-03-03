@@ -1,7 +1,8 @@
 (ns detect-leaf.core
   (:require [detect-leaf.utils :as utils]
             [org.bovinegenius [exploding-fish :as uri]])
-  (:use [clj-xpath.core :only [$x $x:node $x:node+ $x:text+]])
+  (:use [clj-xpath.core :only [$x $x:node $x:node+ $x:text+]]
+        [structural-similarity.xpath-text :only [similar?]])
   (:import (org.htmlcleaner HtmlCleaner DomSerializer CleanerProperties)
            (org.w3c.dom Document)))
 
@@ -20,19 +21,20 @@
               
               body (try (utils/download-with-cookie (:url picked-url))
                         (catch Exception e nil))
-              updated-corpus (merge corpus {(:url picked-url)
-                                            body})
+              updated-corpus (cons {:url (:url picked-url)
+                                    :body body} corpus)
               extracted-links (and
                                body
-                               (extract body picked-url (clojure.set/union
-                                                         (set
-                                                          (map :url url-queue))
-                                                         (set visited))))]
+                               (distinct
+                                (extract body picked-url (clojure.set/union
+                                                          (set
+                                                           (map :url url-queue))
+                                                          (set visited)))))]
           (utils/sayln :url (:url picked-url))
           (utils/sayln :visited (count visited))
           (utils/sayln :left (count url-queue))
           (utils/sayln :extracted (count extracted-links))
-        
+          
           (recur (concat body-queue-new
                          (map
                           (fn [x] {:url x})
@@ -93,3 +95,28 @@
                  extract-in-domain-links
                  #(<= 100 %)
                  {}))
+
+(defn belongs-to-cluster?
+  [x members]
+  (some (fn [m] (similar? (:body m) (:body x))) members))
+
+(defn cluster-corpus
+  [a-corpus]
+  (reduce
+   (fn [clusters x]
+     (let [assignment (.indexOf
+                       (map
+                        (fn [c]
+                          (belongs-to-cluster? x c))
+                        clusters)
+                       true)]
+       (if (neg? assignment)
+         (conj clusters [x])
+         (assoc clusters assignment (conj (nth clusters assignment) x)))))
+   []
+   a-corpus))
+
+(defn identify-leaf
+  [start-url]
+  (let [corpus (fetch-random-corpus start-url)]
+    (cluster-corpus corpus)))

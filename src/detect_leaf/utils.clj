@@ -8,6 +8,16 @@
   (:use [clojure.tools.logging :only (info error)]
         [clj-logging-config.log4j]))
 
+(defn distinct-by-key
+ [coll k]
+ (reduce
+  (fn [acc v]
+    (if (some #{(v k)} (set (map #(k %) acc)))
+      acc
+      (cons v acc)))
+  []
+  coll))
+
 (def my-cs (cookies/cookie-store)) ; for removing that SID nonsense
 
 (defn download-with-cookie
