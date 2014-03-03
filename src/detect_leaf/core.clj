@@ -148,9 +148,9 @@
                          (clojure.java.io/reader
                           (:cluster-corpus options))))
                 wrtr (clojure.java.io/writer
-                      (str
-                       (uri/host
-                        (:cluster-corpus options))
+                      (clojure.string/replace
+                       (:cluster-corpus options)
+                       #".corpus"
                        ".clusters"))
                 stuff (identify-leaf corpus)]
             (pprint stuff wrtr)))))
