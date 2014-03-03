@@ -154,4 +154,9 @@
                        ".clusters"))
                 stuff (identify-leaf
                        (:cluster-corpus options))]
-            (pprint stuff wrtr)))))
+            (pprint stuff wrtr))
+
+          :else
+          (println "Usage:")
+          (println "--download-corpus LINK")
+          (println "--cluster-corpus CORPUS_FILE"))))
