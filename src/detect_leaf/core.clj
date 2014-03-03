@@ -1,7 +1,9 @@
 (ns detect-leaf.core
-  (:require [detect-leaf.utils :as utils]
+  (:require [clojure.tools.cli :as cli]
+            [detect-leaf.utils :as utils]
             [org.bovinegenius [exploding-fish :as uri]])
   (:use [clj-xpath.core :only [$x $x:node $x:node+ $x:text+]]
+        [clojure.pprint :only [pprint]]
         [structural-similarity.xpath-text :only [similar?]])
   (:import (org.htmlcleaner HtmlCleaner DomSerializer CleanerProperties)
            (org.w3c.dom Document)))
@@ -117,7 +119,39 @@
    a-corpus))
 
 (defn identify-leaf
-  [start-url]
-  (let [corpus (fetch-random-corpus start-url)]
-    (map :url (last
-               (sort-by count (cluster-corpus corpus))))))
+  [corpus]
+  (map :url (last
+             (sort-by count (cluster-corpus corpus)))))
+
+(def options
+  [[nil "--download-corpus U" "download a corpus"]
+   [nil "--cluster-corpus C" "cluster the corpus"]])
+
+(defn -main
+  [& args]
+  (let [options (-> args
+                    (cli/parse-opts options)
+                    :options)]
+    (cond (:download-corpus options)
+          (let [wrtr (clojure.java.io/writer
+                      (str
+                       (uri/host
+                        (:download-corpus options))
+                       ".corpus"))
+                stuff (fetch-random-corpus
+                       (:download-corpus options))]
+            (pprint stuff wrtr))
+
+          (:cluster-corpus options)
+          (let [corpus (read
+                        (java.io.PushbackReader.
+                         (clojure.java.io/reader
+                          (:cluster-corpus options))))
+                wrtr (clojure.java.io/writer
+                      (str
+                       (uri/host
+                        (:cluster-corpus options))
+                       ".clusters"))
+                stuff (identify-leaf
+                       (:cluster-corpus options))]
+            (pprint stuff wrtr)))))
