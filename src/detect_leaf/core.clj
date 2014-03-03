@@ -152,8 +152,7 @@
                        (uri/host
                         (:cluster-corpus options))
                        ".clusters"))
-                stuff (identify-leaf
-                       (:cluster-corpus options))]
+                stuff (identify-leaf corpus)]
             (pprint stuff wrtr))
 
           :else
