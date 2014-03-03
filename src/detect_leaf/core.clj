@@ -119,4 +119,5 @@
 (defn identify-leaf
   [start-url]
   (let [corpus (fetch-random-corpus start-url)]
-    (cluster-corpus corpus)))
+    (map :url (last
+               (sort-by count (cluster-corpus corpus))))))
