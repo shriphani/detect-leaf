@@ -91,11 +91,11 @@
                    (catch Exception e nil)) ls)))))))
 
 (defn fetch-random-corpus
-  [start-url]
+  [start-url limit]
   (random-sample [{:url start-url}]
                  (set [])
                  extract-in-domain-links
-                 #(<= 100 %)
+                 #(<= limit %)
                  {}))
 
 (defn belongs-to-cluster?
@@ -125,7 +125,10 @@
 
 (def options
   [[nil "--download-corpus U" "download a corpus"]
-   [nil "--cluster-corpus C" "cluster the corpus"]])
+   [nil "--cluster-corpus C" "cluster the corpus"]
+   [nil "--limit N" "cluster the corpus"
+    :default 500
+    :parse-fn #(Integer/parseInt %)]])
 
 (defn -main
   [& args]
@@ -139,7 +142,8 @@
                         (:download-corpus options))
                        ".corpus"))
                 stuff (fetch-random-corpus
-                       (:download-corpus options))]
+                       (:download-corpus options)
+                       (:limit options))]
             (pprint stuff wrtr))
 
           (:cluster-corpus options)
@@ -153,9 +157,4 @@
                        #".corpus"
                        ".clusters"))
                 stuff (identify-leaf corpus)]
-            (pprint stuff wrtr))
-
-          :else
-          (println "Usage:")
-          (println "--download-corpus LINK")
-          (println "--cluster-corpus CORPUS_FILE"))))
+            (pprint stuff wrtr)))))
