@@ -98,18 +98,38 @@
                  #(<= limit %)
                  {}))
 
-(defn belongs-to-cluster?
+(defn belongs-to-cluster-single?
   [x members]
   (some (fn [m] (similar? (:body m) (:body x))) members))
 
-(defn cluster-corpus
+(defn belongs-to-cluster-single?
+  [x members]
+  (every? (fn [m] (similar? (:body m) (:body x))) members))
+
+(defn cluster-corpus-single
   [a-corpus]
   (reduce
    (fn [clusters x]
      (let [assignment (.indexOf
                        (map
                         (fn [c]
-                          (belongs-to-cluster? x c))
+                          (belongs-to-cluster-single? x c))
+                        clusters)
+                       true)]
+       (if (neg? assignment)
+         (conj clusters [x])
+         (assoc clusters assignment (conj (nth clusters assignment) x)))))
+   []
+   a-corpus))
+
+(defn cluster-corpus-strong
+  [a-corpus]
+  (reduce
+   (fn [clusters x]
+     (let [assignment (.indexOf
+                       (map
+                        (fn [c]
+                          (belongs-to-cluster-strong? x c))
                         clusters)
                        true)]
        (if (neg? assignment)
@@ -119,16 +139,23 @@
    a-corpus))
 
 (defn identify-leaf
-  [corpus]
-  (map :url (last
-             (sort-by count (cluster-corpus corpus)))))
+  [corpus option]
+  (cond (= :single option)
+        (map :url (last
+                   (sort-by count (cluster-corpus-single corpus))))
+
+        (= :strong option)
+        (map :url (last
+                   (sort-by count (cluster-corpus-strong corpus))))))
 
 (def options
   [[nil "--download-corpus U" "download a corpus"]
    [nil "--cluster-corpus C" "cluster the corpus"]
    [nil "--limit N" "cluster the corpus"
     :default 500
-    :parse-fn #(Integer/parseInt %)]])
+    :parse-fn #(Integer/parseInt %)]
+   [nil "--single" "Use single linkage for clustering"]
+   [nil "--strong" "Use strong linkage for clustering"]])
 
 (defn -main
   [& args]
@@ -156,5 +183,5 @@
                        (:cluster-corpus options)
                        #".corpus"
                        ".clusters"))
-                stuff (identify-leaf corpus)]
+                stuff (identify-leaf corpus (if (:strong options) :strong :single))]
             (pprint stuff wrtr)))))
