@@ -23,8 +23,8 @@
    ["Suggestions | Feedback | Support" "http://www.theadminzone.com/forums/forumdisplay.php?f=12" false]
    ["Managing an Online Community" "http://www.theadminzone.com/forums/forumdisplay.php?f=3" false]
    ["Problems Logging On To TAZ Using Chrome?" "http://www.theadminzone.com/forums/showthread.php?t=107933" true]
-   ["Join the TAZ Review team, applications being accepted now!" "http://www.theadminzone.com/forums/showthread.php?t=107933" true]
-   ["Network Disruption" "http://www.theadminzone.com/forums/showthread.php?t=107933" true]
+   ["Join the TAZ Review team, applications being accepted now!" "http://www.theadminzone.com/forums/showthread.php?t=106038" true]
+   ["Network Disruption" "http://www.theadminzone.com/forums/showthread.php?t=107481" true]
    ["The Sandman" "http://www.theadminzone.com/forums/member.php?u=3" false]
    ["esquire" "http://www.theadminzone.com/forums/member.php?u=52998" false]
    ["PoetJC" "http://www.theadminzone.com/forums/member.php?u=11231" false]
@@ -118,9 +118,11 @@
   (clojure.pprint/pprint
    (map
     (fn [[anchor-text url label]]
-      {:anchor-text anchor-text
-       :url url
-       :body (utils/download-with-cookie url)
-       :label label})
+      (do
+        (Thread/sleep 1000)
+        {:anchor-text anchor-text
+         :url url
+         :body (utils/download-with-cookie url)
+         :label label}))
     *train-examples*)
    (io/writer *train-corpus-file*)))
