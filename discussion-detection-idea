@@ -1,0 +1,34 @@
+;; gorilla-repl.fileformat = 1
+
+;; **
+;;; # Detect Forum Leaf Node
+;;; 
+;;; This is a set of experiments on building a forum leaf detection module.
+;; **
+
+;; **
+;;; ## 04/10:
+;;; 
+;;; Features:
+;;; 1. jaccard similarity between anchor text and page-text
+;;; 2. size of anchor-text language model
+;;; 
+;;; Decision tree results:
+;;; Correctly Classified Instances          68               83.9506 %
+;;; Incorrectly Classified Instances        13               16.0494 %
+;;; Kappa statistic                          0.5979
+;;; Mean absolute error                      0.2647
+;;; Root mean squared error                  0.3638
+;;; Relative absolute error                 59.3884 %
+;;; Root relative squared error             77.1771 %
+;;; Total Number of Instances               81     
+;;; 
+;;; 
+;;; So clearly this metric is not v good. Next idea I would like to try is:
+;;; 
+;;; -> remove links off the page and then attempt to perform this classification?
+;;; -> relationship between links and page content
+;;; -> date (o god fucking no)
+;;; -> anchor windows idea? 
+;;; 
+;; **
