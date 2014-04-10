@@ -33,6 +33,7 @@
   (let [dataset (load-instances :arff (str
                                        (.toURI
                                         (java.io.File. train-arff-file))))
+
         classifier (make-classifier :decission-tree :c45)
 
         bin-filename (str (string/replace train-arff-file #".arff" "")
