@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-http "0.9.0"]
                  [clj-logging-config "1.9.7"]
+                 [clj-ml "0.0.3-SNAPSHOT"]
                  [com.github.kyleburton/clj-xpath "1.4.2"]
                  [enlive "1.1.5"]
                  [log4j/log4j "1.2.16"
