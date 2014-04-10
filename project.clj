@@ -6,6 +6,7 @@
   :dependencies [[clj-http "0.9.0"]
                  [clj-logging-config "1.9.7"]
                  [com.github.kyleburton/clj-xpath "1.4.2"]
+                 [enlive "1.1.5"]
                  [log4j/log4j "1.2.16"
                   :exclusions
                   [javax.mail/mail
