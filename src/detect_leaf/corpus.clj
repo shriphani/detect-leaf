@@ -1,6 +1,7 @@
 (ns detect-leaf.corpus
   "Train/test data download"
-  (:require [detect-leaf.utils :as utils]))
+  (:require [clojure.java.io :as io]
+            [detect-leaf.utils :as utils]))
 
 ;; Training set
 ;; Was built from 5 vbulletin, 5 phpbb and 5 ipboard sites
@@ -75,37 +76,51 @@
    ["MichaelR" "http://community.mxtoolbox.com/forums/memberlist.php?mode=viewprofile&u=2970" false]
 
 
-   ;; ipboard
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []
+   ;; Kaspersky Support - ipboard
+   ["Protection for Home Users" "http://forum.kaspersky.com/index.php?showforum=156" false]
+   ["Protection for Small Offices" "http://forum.kaspersky.com/index.php?showforum=187" false]
+   ["Virus-related issues" "http://forum.kaspersky.com/index.php?showforum=19" false]
+   ["Securing Network Access by Application" "http://forum.kaspersky.com/index.php?showtopic=293047" true]
+   ["Kapersky blocks valid application with access database after update on 04/09/2014" "http://forum.kaspersky.com/index.php?showtopic=292998" true]
+   ["KAV 7.0 database is obsolete, won't update" "http://forum.kaspersky.com/index.php?showtopic=293028" true]
+   ["byronb" "http://forum.kaspersky.com/index.php?showuser=511090" false]
+   ["Dr. Shred" "http://forum.kaspersky.com/index.php?showuser=511106" false]
+   ["Norman S." "http://forum.kaspersky.com/index.php?showuser=510914" false]
 
 
-   ;; ipboard
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []
+   ;; 911CD - ipboard
+   ["Bootable CDs" "http://www.911cd.net/forums//index.php?showforum=2" false]
+   ["Windows PE" "http://www.911cd.net/forums//index.php?showforum=19" false]
+   ["Windows2000/XP/Vista/Windows7 CDs/DvDs" "http://www.911cd.net/forums//index.php?showforum=3" false]
+   ["Windows Defender Offline" "http://www.911cd.net/forums//index.php?showtopic=25534" true]
+   ["PCUnlocker Live CD" "http://www.911cd.net/forums//index.php?showtopic=25610" true]
+   ["BartPE-based recovery disk." "http://www.911cd.net/forums//index.php?showtopic=25609" true]
+   ["Erik.Conant" "http://www.911cd.net/forums//index.php?showuser=58599" false]
+   ["cad cow" "http://www.911cd.net/forums//index.php?showuser=58581" false]
+   ["jimmodsss" "http://www.911cd.net/forums//index.php?showuser=58553" false]
 
 
-   ;; ipboard
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []
-   []])
+   ;; Moviestorm - ipboard
+   ["Announcements" "http://www.moviestorm.co.uk/forums/index.php?showforum=7" false]
+   ["Education" "http://www.moviestorm.co.uk/forums/index.php?showforum=37" false]
+   ["Website maintenance" "http://www.moviestorm.co.uk/forums/index.php?showforum=17" false]
+   ["Moviestorm 1.6.3 release" "http://www.moviestorm.co.uk/forums/index.php?showtopic=14787" true]
+   ["Bug in 1.6.1" "http://www.moviestorm.co.uk/forums/index.php?showtopic=14772" true]
+   ["Movie Hosting Service to be withdrawn" "http://www.moviestorm.co.uk/forums/index.php?showtopic=14501" true]
+   ["Moviestorm" "http://www.moviestorm.co.uk/forums/index.php?showuser=658" false]
+   ["primaveranz" "http://www.moviestorm.co.uk/forums/index.php?showuser=2534" false]
+   ["Ben_S" "http://www.moviestorm.co.uk/forums/index.php?showuser=116" false]])
+
+(def *train-corpus-file* "train.corpus")
+
+(defn download-train-corpus
+  []
+  (clojure.pprint/pprint
+   (map
+    (fn [[anchor-text url label]]
+      {:anchor-text anchor-text
+       :url url
+       :body (utils/download-with-cookie url)
+       :label label})
+    *train-examples*)
+   (io/writer *train-corpus-file*)))
