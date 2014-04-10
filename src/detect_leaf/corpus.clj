@@ -126,3 +126,9 @@
          :label label}))
     *train-examples*)
    (io/writer *train-corpus-file*)))
+
+(defn read-train-corpus
+  []
+  (read
+   (java.io.PushbackReader.
+    (io/reader *train-corpus-file*))))

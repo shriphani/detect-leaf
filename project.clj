@@ -20,4 +20,4 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [org.clojure/clojure "1.5.1"]
                  [structural_similarity/structural_similarity "0.1.0-SNAPSHOT"]]
-  :main detect-leaf.core)
+  :plugins [[lein-gorilla "0.2.0"]])

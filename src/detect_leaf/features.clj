@@ -55,6 +55,11 @@
     (/ (count intersection)
        (count union))))
 
+(defn anchor-text-tokens
+  [anchor-text]
+  (count
+   (string/split anchor-text #"\s+")))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
@@ -70,11 +75,13 @@
                       html/text)
 
         body-language-model (language-model body-text)]
-    {:anchor-text anchor-text
-     :url url
-     :label label
-     :jaccard-sim (double
-                   (jaccard-sim
-                    anchor-text-language-model
-                    body-language-model))
-     :num-anchor-tokens (count anchor-text-language-model)}))
+    [(double
+      (jaccard-sim
+       anchor-text-language-model
+       body-language-model))
+     (count anchor-text-language-model)
+     (if label 1 0)]))
+
+(defn compute-features-csv
+  [x]
+  (->> x compute-features (string/join ",")))
