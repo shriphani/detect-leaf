@@ -26,9 +26,15 @@
 ;;; 
 ;;; So clearly this metric is not v good. Next idea I would like to try is:
 ;;; 
-;;; -> remove links off the page and then attempt to perform this classification?
-;;; -> relationship between links and page content
-;;; -> date (o god fucking no)
-;;; -> anchor windows idea? 
+;;; * cosine similarity
+;;; * remove links off the page and then attempt to perform this classification?
+;;; * relationship between links and page content
+;;; * date (o god fucking no)
+;;; * anchor windows idea?
+;;; 
+;;; ## 04/11:
+;;; 
+;;; First, let us add more positive examples:
+;;; 
 ;;; 
 ;; **

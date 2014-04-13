@@ -1,13 +1,48 @@
 (ns detect-leaf.features
   "Features for this classifier"
-  (:require [clojure.set :as clj-set]
+  (:require [clojure.java.io :as io]
+            [clojure.set :as clj-set]
             [clojure.string :as string]
-            [net.cgrand.enlive-html :as html]))
+            [net.cgrand.enlive-html :as html])
+  (:import [org.tartarus.snowball SnowballStemmer]
+           [org.tartarus.snowball.ext englishStemmer]))
+
+(def stoplist (-> "stoplist.txt"
+                  io/resource
+                  slurp
+                  string/split-lines
+                  set))
 
 (defn text->cleaned-tokens
   [a-document]
   (let [tokens (string/split a-document #"\s+|\p{Punct}|\d+")]
     (map string/lower-case tokens)))
+
+(defn stem
+  ([tok]
+     (stem (new englishStemmer)
+           tok))
+  ([stemmer t]
+     (do (.setCurrent stemmer t)
+         (.stem stemmer)
+         (.getCurrent stemmer))))
+
+(def stemmed-stoplist
+  (let [stemmer (new englishStemmer)]
+    (set
+     (map
+      (fn [t] (stem stemmer t))
+      stoplist))))
+
+(defn text->cleaned-stemmed-tokens
+  [a-document]
+  (let [tokens (string/split a-document #"\s+|\p{Punct}|\d+")
+        stemmer (new englishStemmer)]
+    (map
+     (fn [t]
+       (let [lower-tok (string/lower-case t)]
+         (stem stemmer lower-tok)))
+     tokens)))
 
 (defn language-model
   [a-document]
@@ -19,6 +54,15 @@
         [w (/ n (count tokens))])
       (frequencies tokens)))))
 
+(defn stemmed-language-model
+  [a-document]
+  (let [tokens (text->cleaned-stemmed-tokens a-document)]
+    (into
+     {}
+     (map
+      (fn [[w n]]
+        [w (/ n (count tokens))])
+      (frequencies tokens)))))
 
 (defn k-l-divergence
   [model1 model2]
@@ -60,6 +104,15 @@
   (count
    (string/split anchor-text #"\s+")))
 
+(defn count-stopwords
+  [text]
+  (let [cleaned-stemmed-tokens (text->cleaned-stemmed-tokens text)]
+    (count
+     (filter
+      (fn [t]
+        (some #{t} stemmed-stoplist))
+      cleaned-stemmed-tokens))))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
@@ -80,6 +133,7 @@
        anchor-text-language-model
        body-language-model))
      (count anchor-text-language-model)
+     (count-stopwords body-text)
      (if label 1 0)]))
 
 (defn compute-features-csv

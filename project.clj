@@ -16,6 +16,7 @@
                    com.sun.jmx/jmxri]]
                  [net.sourceforge.htmlcleaner/htmlcleaner "2.6"]
                  [org.apache.commons/commons-lang3 "3.1"]
+                 [com.github.rholder/snowball-stemmer "1.3.0.581.1"]
                  [org.bovinegenius/exploding-fish "0.3.3"]
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.logging "0.2.6"]
