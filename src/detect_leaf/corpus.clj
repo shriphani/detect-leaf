@@ -185,6 +185,12 @@
    ["Can't go full screen on TV (1080P) with HD 3670 - Laptop" "http://forums.guru3d.com/showthread.php?t=313274"  true]
    ["WMC video/audio codecs? (mp4 not working for new DVD rips)" "http://forums.guru3d.com/showthread.php?t=386717" true]])
 
+(def *test-negatives-only*
+  (filter
+   (fn [[_ _ v]]
+     v)
+   *test-examples*))
+
 (def *train-corpus-file* "train.corpus")
 
 (defn download-train-corpus

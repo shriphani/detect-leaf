@@ -113,6 +113,17 @@
         (some #{t} stemmed-stoplist))
       cleaned-stemmed-tokens))))
 
+(defn anchor-text-page
+  [text]
+  (string/join
+   " "
+   (map
+    html/text
+    (-> text
+        java.io.StringReader.
+        html/html-resource
+        (html/select [:a])))))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
@@ -127,13 +138,19 @@
                       first
                       html/text)
 
-        body-language-model (language-model body-text)]
+        body-language-model (language-model body-text)
+
+        anchor-text (anchor-text-page body)
+
+        ]
     [(double
       (jaccard-sim
        anchor-text-language-model
        body-language-model))
      (count anchor-text-language-model)
-     (count-stopwords body-text)
+     (double
+      (/ (count-stopwords anchor-text)
+         (count-stopwords body-text)))
      (if label 1 0)]))
 
 (defn compute-features-csv

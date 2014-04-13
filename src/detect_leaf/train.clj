@@ -66,10 +66,19 @@
 
 (defn error
   [classifier-file train-arff class-attr]
-  (let [dataset (load-instances :arff (str
-                                       (.toURI
-                                        (java.io.File. train-arff))))
-
+  (let [dataset (load-instances :arff
+                                (str
+                                 (.toURI
+                                  (java.io.File. train-arff))))
+        
         classifier (deserialize-from-file classifier-file)]
     (do (dataset-set-class dataset class-attr)
         (classifier-evaluate classifier :dataset dataset dataset))))
+
+(defn train-and-evaluate
+  [train-arff-filename test-arff-filename num-features]
+  (do (generate-arff-file num-features train-arff-filename)
+      (generate-arff-file-test num-features test-arff-filename)
+      (let [classifier-file (train train-arff-filename num-features)]
+        {:train-error (error classifier-file train-arff-filename num-features)
+         :test-error  (error classifier-file test-arff-filename num-features)})))
