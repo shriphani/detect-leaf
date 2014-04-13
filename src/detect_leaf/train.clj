@@ -44,3 +44,13 @@
        (classifier-train classifier
                          dataset)
        bin-filename))))
+
+(defn error
+  [classifier-file train-arff class-attr]
+  (let [dataset (load-instances :arff (str
+                                       (.toURI
+                                        (java.io.File. train-arff))))
+
+        classifier (deserialize-from-file classifier-file)]
+    (do (dataset-set-class dataset class-attr)
+        (classifier-evaluate classifier :dataset dataset dataset))))
