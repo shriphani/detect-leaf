@@ -133,6 +133,58 @@
    ["primaveranz" "http://www.moviestorm.co.uk/forums/index.php?showuser=2534" false]
    ["Ben_S" "http://www.moviestorm.co.uk/forums/index.php?showuser=116" false]])
 
+(def *test-examples*
+  ;; vbulletin 1
+  [["Small Compact Digitals by Canon" "http://photography-on-the.net/forum/forumdisplay.php?f=15" false]
+   ["Canon G-series Digital Cameras" "http://photography-on-the.net/forum/forumdisplay.php?f=17" false]
+   ["Canon EF and EF-S Lenses" "http://photography-on-the.net/forum/forumdisplay.php?f=33" false]
+   ["Canon releases PowerShot SX50 HS 50x superzoom" "http://photography-on-the.net/forum/showthread.php?t=1228984" true]
+   ["Powershots N100, SX600HS and Elph 340HS" "http://photography-on-the.net/forum/showthread.php?t=1352539" true]
+   ["Four new PowerShots - A1400, A2600, ELPH 130 and N" "http://photography-on-the.net/forum/showthread.php?t=1263895" true]
+   ["Sylvia Q" "http://photography-on-the.net/forum/member.php?u=373160" false]
+
+   ;; digital grin - vb
+   ["Cameras" "http://www.dgrin.com/forumdisplay.php?f=3" false]
+   ["Flea Market" "http://www.dgrin.com/forumdisplay.php?f=18" false]
+   ["Journeys" "http://www.dgrin.com/forumdisplay.php?f=33" false]
+   ["The Never Ending Alphabet Game Challenge!" "http://www.dgrin.com/showthread.php?t=237186" true]
+   ["Challenge #5 Feathered Friends" "http://www.dgrin.com/showthread.php?t=246355" true]
+   ["#4 OOYCZ -- Silhouettes = \"Stuck in a hotel\"" "http://www.dgrin.com/showthread.php?t=246025" true]
+
+   ;; statcounter - vb
+   ["Service Status" "http://forum.statcounter.com/vb/forumdisplay.php?f=39" false]
+   ["BANNED? Please read!" "http://forum.statcounter.com/vb/forumdisplay.php?f=44" false]
+   ["Help" "http://forum.statcounter.com/vb/forumdisplay.php?f=31" false]
+   ["Checking your Partition Number" "http://forum.statcounter.com/vb/showthread.php?t=38882" true]
+   ["facebook" "http://forum.statcounter.com/vb/showthread.php?t=30074" true]
+   ["Came From - no stats from External - Aha! Check this out" "http://forum.statcounter.com/vb/showthread.php?t=17559" true]
+   ["Rory_A" "http://forum.statcounter.com/vb/member.php?find=lastposter&t=34582" false]
+   ["theBast" "http://forum.statcounter.com/vb/member.php?find=lastposter&t=22559" false]
+   ["kristell" "http://forum.statcounter.com/vb/member.php?find=lastposter&t=42422" false]
+
+   ;; the west - vb
+   ["The Western Star" "http://forum.the-west.net/forumdisplay.php?f=2" false]
+   ["Ideas & Brainfarts" "http://forum.the-west.net/forumdisplay.php?f=10" false]
+   ["Questions & Guides" "http://forum.the-west.net/forumdisplay.php?f=4" false]
+   ["Community Report #5" "http://forum.the-west.net/showthread.php?t=53928" true]
+   ["Main Story Part 9" "http://forum.the-west.net/showthread.php?t=53974" true]
+   ["Facebook: Valentine's Day heart campaign" "http://forum.the-west.net/showthread.php?t=54759" true]
+   ["New update and Christmas Specials!" "http://forum.the-west.net/showthread.php?t=54331" true]
+   ["Da Twista" "http://forum.the-west.net/member.php?find=lastposter&t=53928" false]
+   ["Desi Boukerse" "http://forum.the-west.net/member.php?find=lastposter&t=54863" false]
+   ["Diggo11" "http://forum.the-west.net/member.php?find=lastposter&t=36907" false]
+
+   ;; guru - 3d 
+   ["The Guru's Pub" "http://forums.guru3d.com/forumdisplay.php?f=28" false]
+   ["Folding@Home - Join Team Guru3D !" "http://forums.guru3d.com/forumdisplay.php?f=35" false]
+   ["The HTPC, HDTV & High Definition section" "http://forums.guru3d.com/forumdisplay.php?f=50" false]
+   ["Just built a HTPC, need simple fan control software" "http://forums.guru3d.com/showthread.php?t=388266" true]
+   ["looking to buy a sound card" "http://forums.guru3d.com/showthread.php?t=385500" true]
+   ["Question about 3d LED tv being used as a pc monitor." "http://forums.guru3d.com/showthread.php?t=387364" true]
+   ["Smooth Video Project - Frame Interpolation" "http://forums.guru3d.com/showthread.php?t=363239" true]
+   ["Can't go full screen on TV (1080P) with HD 3670 - Laptop" "http://forums.guru3d.com/showthread.php?t=313274"  true]
+   ["WMC video/audio codecs? (mp4 not working for new DVD rips)" "http://forums.guru3d.com/showthread.php?t=386717" true]])
+
 (def *train-corpus-file* "train.corpus")
 
 (defn download-train-corpus
@@ -149,8 +201,30 @@
     *train-examples*)
    (io/writer *train-corpus-file*)))
 
+(def *test-corpus-file* "test.corpus")
+
+(defn download-test-corpus
+  []
+  (clojure.pprint/pprint
+   (map
+    (fn [[anchor-text url label]]
+      (do
+        (Thread/sleep 1000)
+        {:anchor-text anchor-text
+         :url url
+         :body (utils/download-with-cookie url)
+         :label label}))
+    *test-examples*)
+   (io/writer *test-corpus-file*)))
+
 (defn read-train-corpus
   []
   (read
    (java.io.PushbackReader.
     (io/reader *train-corpus-file*))))
+
+(defn read-test-corpus
+  []
+  (read
+   (java.io.PushbackReader.
+    (io/reader *test-corpus-file*))))

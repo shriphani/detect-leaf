@@ -28,6 +28,25 @@
            (doseq [x xs]
              (println (features/compute-features-csv x))))))))
 
+(defn generate-arff-file-test
+  ([num-features]
+     (generate-arff-file num-features "test.arff"))
+  ([num-features filename]
+     (with-open [wrtr (io/writer filename)]
+       (binding [*out* wrtr]
+         (let [xs (corpus/read-test-corpus)
+               labels (map str "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+           (println "@RELATION discussion")
+           (println)
+           (doseq [i (range num-features)]
+             (println "@ATTRIBUTE " (nth labels i) " NUMERIC"))
+           (println)
+           (println "@ATTRIBUTE class {1, 0}")
+           (println)
+           (println "@DATA")
+           (doseq [x xs]
+             (println (features/compute-features-csv x))))))))
+
 (defn train
   [train-arff-file class-attr]
   (let [dataset (load-instances :arff (str
