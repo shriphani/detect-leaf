@@ -82,3 +82,30 @@
       (let [classifier-file (train train-arff-filename num-features)]
         {:train-error (error classifier-file train-arff-filename num-features)
          :test-error  (error classifier-file test-arff-filename num-features)})))
+
+(defn generate-arff-file-test
+  ([num-features]
+     (generate-arff-file num-features "test.arff"))
+  ([num-features filename]
+     (with-open [wrtr (io/writer filename)]
+       (binding [*out* wrtr]
+         (let [xs (corpus/read-test-corpus)
+               labels (map str "ABCDEFGHIJKLMNOPQRSTUVWXYZ")]
+           (println "@RELATION discussion")
+           (println)
+           (doseq [i (range num-features)]
+             (println "@ATTRIBUTE " (nth labels i) " NUMERIC"))
+           (println)
+           (println "@ATTRIBUTE class {1, 0}")
+           (println)
+           (println "@DATA")
+           (doseq [x xs]
+             (println (features/compute-features-csv x))))))))
+
+(defn train-and-evaluate-negatives
+  [train-arff-filename test-arff-filename num-features]
+  (do (generate-arff-file num-features train-arff-filename)
+      (generate-arff-file-test-neg num-features test-arff-filename)
+      (let [classifier-file (train train-arff-filename num-features)]
+        {:train-error (error classifier-file train-arff-filename num-features)
+         :test-error  (error classifier-file test-arff-filename num-features)})))

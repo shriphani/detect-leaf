@@ -21,5 +21,6 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.logging "0.2.6"]
                  [org.clojure/clojure "1.5.1"]
-                 [structural_similarity/structural_similarity "0.1.0-SNAPSHOT"]]
+                 [structural_similarity/structural_similarity "0.1.0-SNAPSHOT"]
+                 [svm-clj "0.1.3"]]
   :plugins [[lein-gorilla "0.2.0"]])

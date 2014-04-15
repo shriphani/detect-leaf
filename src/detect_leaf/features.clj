@@ -140,19 +140,36 @@
 
         body-language-model (language-model body-text)
 
-        anchor-text (anchor-text-page body)
-
-        ]
+        anchor-text (anchor-text-page body)]
     [(double
       (jaccard-sim
        anchor-text-language-model
        body-language-model))
      (count anchor-text-language-model)
-     (double
-      (/ (count-stopwords anchor-text)
-         (count-stopwords body-text)))
+     (count-stopwords anchor-text)
+     (count-stopwords body-text)
      (if label 1 0)]))
 
 (defn compute-features-csv
   [x]
   (->> x compute-features (string/join ",")))
+
+(defn compute-features-libsvm
+  [x]
+  (let [stuff (->> x compute-features)
+        label (last stuff)
+        pts   (drop-last stuff)]
+    (str
+     (if (= label 1) "+1" "-1")
+     " "
+     (string/join
+      " "
+      (map
+       (fn [[x y]]
+         (str x ":" y))
+       (map vector
+            (map
+             inc
+             (range
+              (count pts)))
+            pts))))))
