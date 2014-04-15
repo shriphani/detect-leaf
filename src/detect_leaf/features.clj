@@ -124,6 +124,19 @@
         html/html-resource
         (html/select [:a])))))
 
+(defn single-token-anchor-texts
+  [text]
+  (count
+   (filter
+    (fn [x]
+      (= 1 (count (string/split x #"\s+"))))
+    (map
+     html/text
+     (-> text
+         java.io.StringReader.
+         html/html-resource
+         (html/select [:a]))))))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
@@ -140,7 +153,9 @@
 
         body-language-model (language-model body-text)
 
-        anchor-text (anchor-text-page body)]
+        anchor-text (anchor-text-page body)
+
+        single-token-anchors (single-token-anchor-texts body)]
     [(double
       (jaccard-sim
        anchor-text-language-model
@@ -148,6 +163,7 @@
      (count anchor-text-language-model)
      (count-stopwords anchor-text)
      (count-stopwords body-text)
+     single-token-anchors
      (if label 1 0)]))
 
 (defn compute-features-csv

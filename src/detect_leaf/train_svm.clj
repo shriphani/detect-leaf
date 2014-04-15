@@ -18,10 +18,10 @@
 
 (def build-test-svm (fn [f] (build-train-file :test f)))
 
-(defn train
+(defn train-svm
   [train-file]
   (let [dataset (read-dataset train-file)
-        model (train-model dataset)]
+        model (train-model dataset :kernel-type (:linear kernel-types))]
     (write-model model (str train-file ".model"))))
 
 (defn evaluate
