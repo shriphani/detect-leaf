@@ -34,5 +34,6 @@
      {}
      (map
       (fn [[label pt]]
+        (println label (int (predict model pt)))
         [label (int (predict model pt))])
       data))))

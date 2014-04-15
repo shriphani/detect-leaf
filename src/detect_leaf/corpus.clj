@@ -183,7 +183,32 @@
    ["Question about 3d LED tv being used as a pc monitor." "http://forums.guru3d.com/showthread.php?t=387364" true]
    ["Smooth Video Project - Frame Interpolation" "http://forums.guru3d.com/showthread.php?t=363239" true]
    ["Can't go full screen on TV (1080P) with HD 3670 - Laptop" "http://forums.guru3d.com/showthread.php?t=313274"  true]
-   ["WMC video/audio codecs? (mp4 not working for new DVD rips)" "http://forums.guru3d.com/showthread.php?t=386717" true]])
+   ["WMC video/audio codecs? (mp4 not working for new DVD rips)" "http://forums.guru3d.com/showthread.php?t=386717" true]
+
+   ;; kidney-forums
+   [nil "http://www.kidneyspace.com/" false]
+   ["Get started here: Rules, Help" "http://www.kidneyspace.com/index.php/board,27.0.html" false]
+   ["Welcome New Members/Introduce Yourself/Share Your Story" "http://www.kidneyspace.com/index.php/board,4.0.html" false]
+   ["Dialysis" "http://www.kidneyspace.com/index.php/board,77.0.html" false]
+   ["Care Partners" "http://www.kidneyspace.com/index.php/board,47.0.html" false]
+   ["MOVED: Stage 3 CKD" "http://www.kidneyspace.com/index.php/topic,4797.0.html" true]
+   ["Suggestion for Tiny link for RSN on Facebook" "http://www.kidneyspace.com/index.php/topic,3552.0.html" true]
+   ["Were the forums down?" "http://www.kidneyspace.com/index.php/topic,2616.0.html" true]
+   ["kidneysp" "http://www.kidneyspace.com/index.php?action=profile;u=1" false]
+   ["getlife" "http://www.kidneyspace.com/index.php?action=profile;u=27" false]
+   ["Angie" "http://www.kidneyspace.com/index.php?action=profile;u=190" false]
+
+   ;; davita
+   [nil "http://forums.davita.com/forum.php" false]
+   ["Share your experiences - General dialysis" "http://forums.davita.com/forumdisplay.php?32-Share-your-experiences-General-dialysis" false]
+   ["Health conditions - General dialysis" "http://forums.davita.com/forumdisplay.php?87-Health-conditions-General-dialysis" false]
+   ["Employment & insurance - General dialysis" "http://forums.davita.com/forumdisplay.php?99-Employment-amp-insurance-General-dialysis" false]
+   ["Dialysis and Medicare" "http://forums.davita.com/showthread.php?5931-Dialysis-and-Medicare" true]
+   ["Do you work and manage dialysis?" "http://forums.davita.com/showthread.php?6746-Do-you-work-and-manage-dialysis" true]
+   ["Dialysis and the Fiscal Cliff Bill" "http://forums.davita.com/showthread.php?6094-Dialysis-and-the-Fiscal-Cliff-Bill" true]
+   ["HELP!!!how can I be a volunteer nurse" "http://forums.davita.com/showthread.php?6036-HELP!!!how-can-I-be-a-volunteer-nurse" true]
+   ["View Profile" "http://forums.davita.com/member.php?117564-malibu" false]
+   ["View Forum Posts" "http://forums.davita.com/search.php?do=finduser&userid=117564&contenttype=vBForum_Post&showposts=1" false]])
 
 (def *test-negatives-only*
   (filter

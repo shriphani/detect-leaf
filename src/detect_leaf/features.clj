@@ -137,12 +137,22 @@
          html/html-resource
          (html/select [:a]))))))
 
+(defn anchor-texts
+  [text]
+  (map
+   html/text
+   (-> text
+       java.io.StringReader.
+       html/html-resource
+       (html/select [:a]))))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
     body :body
     label :label}]
-  (let [anchor-text-language-model (language-model anchor-text)
+  (let [anchor-text-language-model (try (language-model anchor-text)
+                                        (catch NullPointerException e {}))
 
         body-text (-> body
                       java.io.StringReader.
@@ -155,12 +165,31 @@
 
         anchor-text (anchor-text-page body)
 
-        single-token-anchors (single-token-anchor-texts body)]
-    [(double
-      (jaccard-sim
-       anchor-text-language-model
-       body-language-model))
+        single-token-anchors (single-token-anchor-texts body)
+
+        anchors (anchor-texts body)
+
+        positions (distinct (sort (map (fn [t] (.indexOf body-text t)) anchors)))
+        
+        avg-anchor-l (double
+                      (/ (apply + (map count (anchor-texts body)))
+                         (count (anchor-texts body))))
+
+        gaps (map
+              (fn [[x y]] (- x y))
+              (map vector (rest positions) positions))
+
+        avg-gap (double
+                 (/ (apply + gaps)
+                    (count gaps)))]
+    [(if (nil? anchor-text)
+       0.0
+       (double
+        (jaccard-sim
+         anchor-text-language-model
+         body-language-model)))
      (count anchor-text-language-model)
+     avg-gap
      (count-stopwords anchor-text)
      (count-stopwords body-text)
      single-token-anchors
