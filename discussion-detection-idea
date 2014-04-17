@@ -1,14 +1,30 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
+;;; # New Scheduler Perf:
+;;; 
+;;; 2 examples per out-group
+;;; 
+;;; Full model retrieval performance:
+;;; 
+;;;     http://grails.1312388.n4.nabble.com/ - 0.96 - 100
+;;;     http://r.789695.n4.nabble.com/ - 0.96 - 150
+;;;     http://osgeo-org.1560.x6.nabble.com/ - 0.88 - 200
+;;;     http://imagej.1557.x6.nabble.com/ - 0.96 - 200
+;;;     http://t58.1557.x6.nabble.com/ - 0.89 - 200
+;;;     http://ruralmail.com/ - 0.87 - 200
+;;; 
+;;; 
+;;; 
+;; **
+
+;; **
 ;;; # Detect Forum Leaf Node
 ;;; 
 ;;; This is a set of experiments on building a forum leaf detection module.
 ;; **
 
 ;; **
-;;; ## 04/10:
-;;; 
 ;;; Features:
 ;;; 1. jaccard similarity between anchor text and page-text
 ;;; 2. size of anchor-text language model
@@ -32,7 +48,6 @@
 ;;; * date (o god fucking no)
 ;;; * anchor windows idea?
 ;;; 
-;;; ## 04/12:
 ;;; 
 ;;; Adding more features to this sucker:
 ;;; 
@@ -124,7 +139,42 @@
 ;;; 
 ;;; First we need to confirm what kind of error this is. If the guy is producing some errors that we don't like (for instance poor precision on just discussion pages but high accuracy on others)
 ;;; 
-;;; Another feature I can think of is gap betweeen anchor tags (this is now getting to be fucking ridiculous)
+;;; Ok, massive accuracy improvement moving to SVM.
+;;; 
+;;; Feature Set:
+;;; 
+;;; 1. Jaccard Similarity between anchor-text language-model and body language-model
+;;; 2. number of unique tokens in the outlink-text of the webpage
+;;; 3. Retrieve all links on page - the average gap between the links on the webpage
+;;; 4. Number of stopwords in links on the page
+;;; 5. number of stopwords in the body
+;;; 6. Number of single-token links
+;;; 
+;;; On our test set:
+;;; 
+;;;     {:fail 6, :success 56}
+;;; 
+;;; Training set construction:
+;;; 
+;;; 1. Set of 103 training documents:
+;;;    3 vBulletin forums
+;;;    3 ipBoard forums
+;;;    3 phpbb forums
+;;;    
+;;;    from each of these forums, we have 3 index pages + 3 author pages (i.e. NOT discussion) and 6 discussion pages.
+;;;    
+;;; 2. Set of 62 test documents:
+;;;    Same as above, combine vb, phpbb, ipboard and SMF. author, index and discussion pages combined.
+;;;    
+;;; Misclassification analysis:
+;;; 
+;;; out of 62 documents: 4 discussion pages identified as otherwise (acceptable), 2 non-discussion pages identified as otherwise - one of these was an author page: vocabulary strategy for disambiguating
+;;;    
+;;; 
 ;;; 
 ;;; 
 ;; **
+
+;; @@
+
+;; @@
