@@ -218,3 +218,15 @@
              (range
               (count pts)))
             pts))))))
+
+(defn compute-features-map
+  [x]
+  (let [fs (compute-features x)]
+    (into
+     {}
+     (map vector
+          (map
+           inc
+           (range
+            (count fs)))
+          fs))))
