@@ -4,8 +4,10 @@
             [clojure.set :as clj-set]
             [clojure.string :as string]
             [net.cgrand.enlive-html :as html])
+  (:use [clj-xpath.core :only [$x $x:text+]])
   (:import [org.tartarus.snowball SnowballStemmer]
-           [org.tartarus.snowball.ext englishStemmer]))
+           [org.tartarus.snowball.ext englishStemmer]
+           (org.htmlcleaner HtmlCleaner DomSerializer CleanerProperties)))
 
 (def stoplist (-> "stoplist.txt"
                   io/resource
@@ -146,6 +148,24 @@
        html/html-resource
        (html/select [:a]))))
 
+(defn texts
+  [text]
+  (let [cleaner (new HtmlCleaner)
+        props (.getProperties cleaner)
+        _ (.setPruneTags props "script, style")
+        _ (.setOmitComments props true)
+        cleaned-text (.clean cleaner text)
+
+        cleaner-props  (new CleanerProperties)
+
+        dom-serializer (new DomSerializer cleaner-props)
+
+        node (.createDOM dom-serializer cleaned-text)]
+    (filter
+     (fn [x]
+       (not= "" x))
+     (map clojure.string/trim ($x:text+ ".//text()" node)))))
+
 (defn compute-features
   [{anchor-text :anchor-text
     url :url
@@ -181,7 +201,27 @@
 
         avg-gap (double
                  (/ (apply + gaps)
-                    (count gaps)))]
+                    (count gaps)))
+
+        var-gap (/
+                 (reduce
+                  (fn [acc g]
+                    (+ (Math/pow (- g avg-gap) 2) acc))
+                  0
+                  gaps)
+                 (count gaps))
+
+        body-texts (texts body)
+        
+        text-positions (distinct (sort (map (fn [t] (.indexOf body-text t)) body-texts)))
+
+        text-gaps (map
+                   (fn [[x y]] (- x y))
+                   (map vector (rest text-positions) text-positions))
+
+        avg-txt-gap (double
+                     (/ (apply + text-gaps)
+                        (count text-gaps)))]
     [(if (nil? anchor-text)
        0.0
        (double
@@ -190,6 +230,7 @@
          body-language-model)))
      (count anchor-text-language-model)
      avg-gap
+     avg-txt-gap
      (count-stopwords anchor-text)
      (count-stopwords body-text)
      single-token-anchors
@@ -221,7 +262,7 @@
 
 (defn compute-features-map
   [x]
-  (let [fs (compute-features x)]
+  (let [fs (drop-last (compute-features x))]
     (into
      {}
      (map vector
