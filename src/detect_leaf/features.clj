@@ -3,7 +3,8 @@
   (:require [clojure.java.io :as io]
             [clojure.set :as clj-set]
             [clojure.string :as string]
-            [net.cgrand.enlive-html :as html])
+            [net.cgrand.enlive-html :as html]
+            [detect-leaf.dom :as dom])
   (:use [clj-xpath.core :only [$x $x:text+]])
   (:import [org.tartarus.snowball SnowballStemmer]
            [org.tartarus.snowball.ext englishStemmer]
@@ -115,6 +116,16 @@
         (some #{t} stemmed-stoplist))
       cleaned-stemmed-tokens))))
 
+(defn count-distinct-stopwords
+  [text]
+  (let [cleaned-stemmed-tokens (text->cleaned-stemmed-tokens text)]
+    (count
+     (distinct
+      (filter
+       (fn [t]
+         (some #{t} stemmed-stoplist))
+       cleaned-stemmed-tokens)))))
+
 (defn anchor-text-page
   [text]
   (string/join
@@ -221,7 +232,9 @@
 
         avg-txt-gap (double
                      (/ (apply + text-gaps)
-                        (count text-gaps)))]
+                        (count text-gaps)))
+
+        table-links (dom/num-page-histogram-links body)]
     [(if (nil? anchor-text)
        0.0
        (double
@@ -230,10 +243,11 @@
          body-language-model)))
      (count anchor-text-language-model)
      avg-gap
-     avg-txt-gap
      (count-stopwords anchor-text)
      (count-stopwords body-text)
      single-token-anchors
+     (count-distinct-stopwords anchor-text)
+     (count-distinct-stopwords body-text)
      (if label 1 0)]))
 
 (defn compute-features-csv
