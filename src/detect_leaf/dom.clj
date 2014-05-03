@@ -99,17 +99,21 @@
         []
         nodes-pairs)))))
 
+(defn page-histogram-candidates
+  [page-grouped-anchors]
+  (filter
+   (fn [x]
+     (let [histogram (histograms x)]
+       (and (= 1 (count histogram))
+            (= (count (filter #(> % 1) (first histogram)))
+               2))))
+   page-grouped-anchors))
+
 (defn page-histogram-links
   [page-src]
   (let [as (grouped-anchors page-src)
         histogram-candidates 
-        (filter
-         (fn [x]
-           (let [histogram (histograms x)]
-             (and (= 1 (count histogram))
-                  (= (count (filter #(> % 1) (first histogram)))
-                     2))))
-         as)]
+        (page-histogram-candidates as)]
     (distinct
      (reduce
       (fn [acc [path ns]]
@@ -133,3 +137,4 @@
   (-> page-src
       page-histogram-links
       count))
+
