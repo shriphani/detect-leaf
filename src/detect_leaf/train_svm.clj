@@ -26,12 +26,22 @@
 
 (defn evaluate
   [model-file test-file]
-  (let [{s :success f :fail}
+  (let [{s :success f :fail fp :false-pos fns :false-neg}
         (let [model (read-model model-file)
               data  (read-dataset test-file)]
           (reduce
            (fn [acc [label pred]]
-             (merge-with + acc (if (= label pred) {:success 1} {:fail 1})))
+             (merge-with + acc (if (= label pred)
+                                 {:success 1}
+                                 {:fail 1
+                                  :false-neg
+                                  (if (pos? label)
+                                    1
+                                    0)
+                                  :false-pos
+                                  (if (pos? label)
+                                    0
+                                    1)})))
            {}
            (map
             (fn [[label pt]]
@@ -39,7 +49,9 @@
             data)))]
     {:success s
      :fail f
-     :accuracy (double (/ s (+ s f)))}))
+     :accuracy (double (/ s (+ s f)))
+     :false-pos fp
+     :false-neg fns}))
 
 (defn train-and-test
   [model-prefix]
