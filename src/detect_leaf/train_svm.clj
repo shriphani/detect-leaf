@@ -25,6 +25,7 @@
     (write-model model (str train-file ".model"))))
 
 (defn evaluate
+  "Return stats for a set"
   [model-file test-file]
   (let [{s :success f :fail fp :false-pos fns :false-neg}
         (let [model (read-model model-file)
@@ -52,6 +53,23 @@
      :accuracy (double (/ s (+ s f)))
      :false-pos fp
      :false-neg fns}))
+
+(defn evaluate-set
+  "Return dataset and values"
+  [model-file test-file]
+  (let [model (read-model model-file)
+        data (read-dataset test-file)]
+    (filter
+     (fn [[i label pred]]
+       (not= label (int pred)))
+     (map
+      (fn [[[label x] i]]
+        [i label (predict model x)])
+      (map
+       vector
+       data
+       (range
+        (count data)))))))
 
 (defn train-and-test
   [model-prefix]
