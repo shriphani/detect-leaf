@@ -30,6 +30,15 @@
          (.stem stemmer)
          (.getCurrent stemmer))))
 
+(defn digit-tokens
+  [text]
+  (let [tokens (string/split text #"\s+|\p{Punct}")]
+    (count
+     (filter
+      (fn [t]
+        (re-find #"\d+" t))
+      tokens))))
+
 (def stemmed-stoplist
   (let [stemmer (new englishStemmer)]
     (set
@@ -194,8 +203,15 @@
 
         body-language-model (language-model body-text)
 
-        anchor-text (anchor-text-page body)
+        body-tokens (distinct (map first body-language-model))
+        
+        page-anchor-text (anchor-text-page body)
 
+        page-anchors-language-model (try (language-model page-anchor-text)
+                                         (catch NullPointerException e {}))
+
+        page-anchor-tokens (distinct (map first page-anchors-language-model))
+        
         single-token-anchors (single-token-anchor-texts body)
 
         anchors (anchor-texts body)
@@ -243,11 +259,20 @@
          body-language-model)))
      (count anchor-text-language-model)
      avg-gap
-     (count-stopwords anchor-text)
+     (if (nil? anchor-text) 0 (count-stopwords anchor-text))
      (count-stopwords body-text)
      single-token-anchors
-     (count-distinct-stopwords anchor-text)
-     (count-distinct-stopwords body-text)
+     ;; (double
+     ;;  (/ (count page-anchor-text)
+     ;;     (count body)))
+                                        ;(if (nil? anchor-text) 0 (count-distinct-stopwords anchor-text))
+                                        ;(count-distinct-stopwords body-text)
+                                        ;     (count (distinct (map first body-language-model)))
+                                        ;     (count
+                                        ;     page-anchor-tokens)
+                                        ;(digit-tokens body-text)
+                                        ;avg-anchor-l
+     
      (if label 1 0)]))
 
 (defn compute-features-csv
