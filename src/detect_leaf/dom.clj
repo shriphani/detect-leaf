@@ -105,8 +105,8 @@
    (fn [x]
      (let [histogram (histograms x)]
        (and (= 1 (count histogram))
-            (= (count (filter #(> % 1) (first histogram)))
-               2))))
+            (>= (count (filter #(> % 1) (first histogram)))
+                2))))
    page-grouped-anchors))
 
 (defn page-histogram-links
@@ -126,6 +126,26 @@
                    (.getAttributes)
                    (.getNamedItem "href")
                    (.getValue))
+               (catch Exception e nil)))
+           ns))
+         acc))
+      []
+      histogram-candidates))))
+
+(defn page-histogram-text
+  [page-src]
+  (let [as (grouped-anchors page-src)
+        histogram-candidates 
+        (page-histogram-candidates as)]
+    (distinct
+     (reduce
+      (fn [acc [path ns]]
+        (concat
+         (distinct
+          (map
+           (fn [n]
+             (try
+               (.getTextContent n)
                (catch Exception e nil)))
            ns))
          acc))
