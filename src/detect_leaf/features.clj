@@ -4,8 +4,9 @@
             [clojure.set :as clj-set]
             [clojure.string :as string]
             [net.cgrand.enlive-html :as html]
-            [detect-leaf.dom :as dom])
-  (:use [clj-xpath.core :only [$x $x:text+]])
+            [detect-leaf.dom :as dom]
+            [detect-leaf.enlive-helper :as enlive-helper])
+  (:use [clj-xpath.core :only [$x $x:text+ $x:node+]])
   (:import [org.tartarus.snowball SnowballStemmer]
            [org.tartarus.snowball.ext englishStemmer]
            (org.htmlcleaner HtmlCleaner DomSerializer CleanerProperties)))
@@ -193,10 +194,11 @@
     label :label}]
   (let [anchor-text-language-model (try (language-model anchor-text)
                                         (catch NullPointerException e {}))
-
+        
         body-text (-> body
-                      java.io.StringReader.
-                      html/html-resource
+                      (enlive-helper/html-resource-steroids
+                       :omit-comments true
+                       :prune-tags "script, style")
                       (html/select [:html])
                       first
                       html/text)
@@ -216,7 +218,15 @@
 
         anchors (anchor-texts body)
 
-        positions (distinct (sort (map (fn [t] (.indexOf body-text t)) anchors)))
+        positions (distinct
+                   (sort
+                    (map
+                     (fn [t] (.indexOf
+                             (clojure.string/replace body-text
+                                                     #"\s+"
+                                                     " ")
+                             t))
+                     anchors)))
         
         avg-anchor-l (double
                       (/ (apply + (map count (anchor-texts body)))

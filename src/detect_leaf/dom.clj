@@ -39,12 +39,13 @@
             (format "%s[contains(@class,'%s')]" n c)
             n))
         (cons ["html" nil] cur-path))))
-     (recur (.getParentNode a-node) (cons [(.getNodeName a-node)
-                                           (try (-> a-node
-                                                    (.getAttributes)
-                                                    (.getNamedItem "class")
-                                                    (.getValue))
-                                                (catch Exception e nil))] cur-path)))))
+     (recur (.getParentNode a-node)
+            (cons [(.getNodeName a-node)
+                   (try (-> a-node
+                            (.getAttributes)
+                            (.getNamedItem "class")
+                            (.getValue))
+                        (catch Exception e nil))] cur-path)))))
 
 (defn grouped-anchors
   [page-src]

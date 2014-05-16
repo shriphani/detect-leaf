@@ -83,3 +83,8 @@
           {:model-file model
            :train-accuracy train-accuracy
            :test-accuracy test-accuracy}))))
+
+(defn evaluate-pt
+  [model-file pt]
+  (let [model (read-model model-file)]
+    (predict model pt)))

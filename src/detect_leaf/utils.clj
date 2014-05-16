@@ -3,8 +3,7 @@
 
 (ns detect-leaf.utils
   (:require [clj-http.client :as client]
-            [clj-http.cookies :as cookies]
-            [org.bovinegenius [exploding-fish :as uri]])
+            [clj-http.cookies :as cookies])
   (:use [clojure.tools.logging :only (info error)]
         [clj-logging-config.log4j]))
 
