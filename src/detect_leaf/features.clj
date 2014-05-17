@@ -194,12 +194,14 @@
     label :label}]
   (let [anchor-text-language-model (try (language-model anchor-text)
                                         (catch NullPointerException e {}))
+
+        body-map (-> body
+                     (enlive-helper/html-resource-steroids
+                      :omit-comments true
+                      :prune-tags "script, style")
+                     (html/select [:html]))
         
-        body-text (-> body
-                      (enlive-helper/html-resource-steroids
-                       :omit-comments true
-                       :prune-tags "script, style")
-                      (html/select [:html])
+        body-text (-> body-map
                       first
                       html/text)
 
@@ -221,11 +223,7 @@
         positions (distinct
                    (sort
                     (map
-                     (fn [t] (.indexOf
-                             (clojure.string/replace body-text
-                                                     #"\s+"
-                                                     " ")
-                             t))
+                     (fn [t] (.indexOf body-text t))
                      anchors)))
         
         avg-anchor-l (double
@@ -260,7 +258,19 @@
                      (/ (apply + text-gaps)
                         (count text-gaps)))
 
-        table-links (dom/num-page-histogram-links body)]
+        table-links (dom/num-page-histogram-links body)
+
+        image-srcs  (or (second
+                         (last
+                          (sort-by
+                           second
+                           (frequencies
+                            (map
+                             (fn [i]
+                               (-> i :attrs :src))
+                             (html/select body-map
+                                          [:img]))))))
+                        0)]
     [(if (nil? anchor-text)
        0.0
        (double
@@ -269,6 +279,7 @@
          body-language-model)))
      (count anchor-text-language-model)
      avg-gap
+     image-srcs
      (if (nil? anchor-text) 0 (count-stopwords anchor-text))
      (count-stopwords body-text)
      single-token-anchors
